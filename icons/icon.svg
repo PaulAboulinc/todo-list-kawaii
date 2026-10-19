@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Fond plein (Android découpe l'icône en cercle/squircle) ; le mochi reste dans la zone sûre centrale. -->
+  <rect width="512" height="512" fill="#ffd0e3"/>
+  <g transform="translate(58 78) scale(3.3)">
+    <path d="M30 42 L35 14 L56 30 Z M90 42 L85 14 L64 30 Z" fill="#fff" stroke="#ef94bb" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M36 34 L38.5 22 L48 30 Z M84 34 L81.5 22 L72 30 Z" fill="#ffc4dc"/>
+    <path d="M10 70 C10 42 32 27 60 27 C88 27 110 42 110 70 C110 88 92 95 60 95 C28 95 10 88 10 70 Z" fill="#fff" stroke="#ef94bb" stroke-width="3"/>
+    <ellipse cx="33" cy="72" rx="8" ry="4.5" fill="#ffb3d1"/>
+    <ellipse cx="87" cy="72" rx="8" ry="4.5" fill="#ffb3d1"/>
+    <circle cx="44" cy="62" r="5" fill="#4b3a55"/>
+    <circle cx="76" cy="62" r="5" fill="#4b3a55"/>
+    <circle cx="45.8" cy="60.2" r="1.7" fill="#fff"/>
+    <circle cx="77.8" cy="60.2" r="1.7" fill="#fff"/>
+    <path d="M54 70 q3 4 6 0 q3 4 6 0" fill="none" stroke="#4b3a55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
