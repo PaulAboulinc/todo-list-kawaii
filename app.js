@@ -13,16 +13,6 @@ const logger = {
 const STORAGE_KEY = 'mochi-todo:v1';
 const TAG_COLORS = 6; // --c1 … --c6 dans style.css
 const SPARKLES = [['♥', '#ff7eb3'], ['✦', '#b28dff'], ['★', '#ffb347'], ['✿', '#5fd3a0']];
-const CHEERS = {
-  done: ['Bien joué ! ✨', 'Une de moins, bravo ! 💖', 'Mission accomplie ! 🌟', 'Yatta ! 🎉', 'Tu gères ! 💪'],
-  later: ['Chaque petit pas compte 🐾', 'Un jour à la fois 🌙', 'Ça avance, c’est l’essentiel 🌱', 'Bien avancé, la suite demain 💤', 'Petit à petit, l’oiseau fait son nid 🐣'],
-};
-const EMPTY_TEXT = {
-  all: 'Ta liste est toute vide… ajoute une petite mission ! 🌸',
-  todo: 'Plus rien à faire, quelle star ! ⭐',
-  doing: 'Aucune grosse mission en cours. Touche 🌙 sur une tâche pour la faire durer plusieurs jours.',
-  done: 'Rien de fini pour l’instant, courage ! 🍡',
-};
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const $ = (sel) => document.querySelector(sel);
@@ -70,7 +60,6 @@ function save() {
 // crypto.randomUUID() n'existe pas en HTTP simple (test sur le téléphone via le Wi-Fi)
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
-const plural = (n, word) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
 // Date locale du jour au format AAAA-MM-JJ
 function today() {
@@ -111,10 +100,10 @@ function render() {
   els.progress.firstElementChild.style.width = `${pct}%`;
   els.progress.setAttribute('aria-valuenow', pct);
   els.count.parentElement.hidden = !tasks.length;
-  els.count.textContent = `🏆 ${plural(wins, 'victoire')} aujourd’hui`;
-  els.clear.hidden = !tasks.some((t) => t.done);
+  els.count.textContent = t.winsToday(wins);
+  els.clear.hidden = !tasks.some((task) => task.done);
   els.empty.hidden = visible.length > 0;
-  els.empty.textContent = EMPTY_TEXT[filter];
+  els.empty.textContent = t.empty[filter];
   els.hint.hidden = !tasks.some((t) => !t.done) || tasks.some((t) => t.worked.length);
   els.filters.forEach((b) => b.setAttribute('aria-pressed', b.dataset.filter === filter));
   renderMood();
@@ -122,12 +111,12 @@ function render() {
 
 function renderMood() {
   const { wins, left, resting } = stats();
-  if (!tasks.length) setMood('sleepy', 'Zzz… rien à faire, petite sieste ? 💤');
-  else if (!left) setMood('happy', resting ? 'Journée bouclée ! La suite demain 🌙' : 'Tout est fini, t’es incroyable ! 🎉');
+  if (!tasks.length) setMood('sleepy', t.sleepy);
+  else if (!left) setMood('happy', resting ? t.dayDone : t.allDone);
   else if (cheer) setMood('happy', cheer);
-  else if (left === 1) setMood('normal', 'Plus qu’une pour aujourd’hui, tu y es presque ! 💪');
-  else if (wins) setMood('normal', `Déjà ${plural(wins, 'victoire')} aujourd’hui, continue comme ça ! ✨`);
-  else setMood('normal', 'Nouvelle journée ! Une petite mission pour commencer ? 🌸');
+  else if (left === 1) setMood('normal', t.oneLeft);
+  else if (wins) setMood('normal', t.winsSoFar(wins));
+  else setMood('normal', t.newDay);
 }
 
 function setMood(mood, text) {
@@ -138,9 +127,8 @@ function setMood(mood, text) {
 function chipText(task, day) {
   const n = task.worked.length;
   if (!n) return '';
-  if (task.done) return `🏆 Bouclée en ${plural(effortDays(task), 'jour')}`;
-  const effort = n > 1 ? `${n} jours d’efforts` : '1 jour d’effort';
-  return task.worked.at(-1) === day ? `🌙 À demain · ${effort}` : `💪 En cours · ${effort}`;
+  if (task.done) return t.finishedIn(effortDays(task));
+  return task.worked.at(-1) === day ? t.resting(t.effort(n)) : t.ongoing(t.effort(n));
 }
 
 function renderItem(task, day) {
@@ -154,11 +142,11 @@ function renderItem(task, day) {
 
   const check = li.querySelector('.check');
   check.setAttribute('aria-pressed', task.done);
-  check.setAttribute('aria-label', task.done ? 'Remettre à faire' : 'Marquer comme finie');
+  check.setAttribute('aria-label', task.done ? t.markTodo : t.markDone);
   const later = li.querySelector('.later');
   later.hidden = task.done;
   later.setAttribute('aria-pressed', rests);
-  later.setAttribute('aria-label', rests ? 'Annuler « à demain »' : 'J’ai avancé, la suite demain');
+  later.setAttribute('aria-label', rests ? t.undoLater : t.later);
 
   li.querySelector('.text').textContent = task.text;
   const chip = li.querySelector('.chip');
@@ -209,7 +197,7 @@ function toggle(task, btn) {
   if (task.done) {
     task.doneOn = today();
     const n = effortDays(task);
-    win(btn, task.worked.length && n > 1 ? `Bouclée en ${n} jours, quelle persévérance ! 🏆` : pick(CHEERS.done));
+    win(btn, task.worked.length && n > 1 ? t.longDone(n) : pick(t.cheers.done));
   } else {
     delete task.doneOn;
     cheer = null;
@@ -225,7 +213,7 @@ function later(task, btn) {
     cheer = null;
   } else {
     task.worked.push(day);
-    win(btn, pick(CHEERS.later));
+    win(btn, pick(t.cheers.later));
   }
   save();
   render();
@@ -248,7 +236,7 @@ function startEdit(task, li) {
   input.value = task.text;
   input.maxLength = 120;
   input.enterKeyHint = 'done';
-  input.setAttribute('aria-label', 'Modifier la tâche');
+  input.setAttribute('aria-label', t.edit);
   li.querySelector('.text').replaceWith(input);
   input.focus();
 
@@ -303,7 +291,7 @@ els.filters.forEach((btn) => btn.addEventListener('click', () => {
 }));
 
 els.clear.addEventListener('click', () => {
-  if (!confirm('Supprimer toutes les missions finies ?')) return;
+  if (!confirm(t.clearConfirm)) return;
   tasks = tasks.filter((t) => !t.done);
   save();
   render();
@@ -314,8 +302,16 @@ document.addEventListener('visibilitychange', () => {
   if (!document.hidden && !els.list.querySelector('.edit')) render();
 });
 
+// Textes fixes de la page et du modèle de tâche, dans la langue de l'appareil (i18n.js)
+document.documentElement.lang = LANG;
+els.input.placeholder = t.newTask;
+for (const root of [document, els.tpl.content]) {
+  root.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t[el.dataset.i18n]; });
+  root.querySelectorAll('[data-i18n-label]').forEach((el) => el.setAttribute('aria-label', t[el.dataset.i18nLabel]));
+}
+
 render();
-logger.info('app.start', { tasks: tasks.length });
+logger.info('app.start', { tasks: tasks.length, lang: LANG });
 
 // Demande au navigateur de ne pas effacer nos données si le stockage manque
 navigator.storage?.persist?.();

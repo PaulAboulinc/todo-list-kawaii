@@ -1,9 +1,10 @@
 // Incrémenter la version à chaque mise à jour de l'appli pour forcer le rechargement du cache.
-const CACHE = 'mochi-todo-v2';
+const CACHE = 'mochi-todo-v3';
 const SHELL = [
   './',
   'index.html',
   'style.css',
+  'i18n.js',
   'app.js',
   'manifest.webmanifest',
   'icons/icon.svg',

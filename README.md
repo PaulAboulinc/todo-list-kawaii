@@ -12,6 +12,7 @@ Si tu désinstalles l'appli, les tâches sont perdues.
 - **🌙** : « j'ai avancé, la suite demain ». La tâche passe *en cours*, compte comme une victoire du jour et revient le lendemain. Le compteur de jours d'effort s'affiche dessus.
 - La barre de progression et Mochi suivent **la journée** : quand tout est fini ou mis « à demain », la journée est bouclée.
 - Toucher le texte d'une tâche permet de le modifier.
+- L'interface suit la langue de l'appareil : français, anglais, espagnol, portugais, allemand, italien, russe, japonais, chinois simplifié et coréen. Pour toute autre langue, elle s'affiche en anglais.
 
 ## Tester sur l'ordinateur
 
@@ -57,6 +58,7 @@ L'appli se recharge d'elle-même dès que la nouvelle version est prise en compt
 | `index.html` | Structure de la page et mascotte Mochi (SVG) |
 | `style.css` | Thème pastel (clair et sombre automatiques) |
 | `app.js` | Logique : ajout, édition, filtres, sauvegarde |
+| `i18n.js` | Textes de l'interface dans chaque langue |
 | `sw.js` | Service worker pour le mode hors-ligne |
 | `manifest.webmanifest` | Nom, couleurs et icônes pour l'installation |
 | `icons/` | Icône source `icon.svg` et PNG 192/512 générés à partir de celle-ci |
