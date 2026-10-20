@@ -59,6 +59,7 @@ L'appli se recharge d'elle-même dès que la nouvelle version est prise en compt
 | `style.css` | Thème pastel (clair et sombre automatiques) |
 | `app.js` | Logique : ajout, édition, filtres, sauvegarde |
 | `i18n.js` | Textes de l'interface dans chaque langue |
+| `privacy.html` | Politique de confidentialité (exigée par le Play Store) |
 | `sw.js` | Service worker pour le mode hors-ligne |
 | `manifest.webmanifest` | Nom, couleurs et icônes pour l'installation |
 | `icons/` | Icône source `icon.svg` et PNG 192/512 générés à partir de celle-ci |
