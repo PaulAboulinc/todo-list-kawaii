@@ -299,7 +299,8 @@ h1 {
   color: var(--ink-soft);
 }
 .link { padding: 10px 4px; color: var(--accent-deep); font-weight: 700; }
-.privacy { display: block; margin-top: 24px; text-align: center; font-size: .8rem; color: var(--ink-soft); }
+.credits { margin: 24px 0 0; text-align: center; font-size: .8rem; color: var(--ink-soft); }
+.credits a { color: inherit; }
 
 /* Paillettes quand on coche */
 .sparkle {
